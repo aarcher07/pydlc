@@ -64,14 +64,17 @@ def dense_lines(ys, x=None, ax=None, ny=100, y_lim=None, y_pad=0.01,
 
     x_grid = np.linspace(x.min(), x.max(), nx)
 
-    grid = np.zeros((ny, nx))
+    grid = np.empty((ny, nx))
+    grid[:] = np.nan
     indices = np.searchsorted(y_grid, ys) - 1
 
     for idx in indices:
+        if np.isnan(grid[idx, x_range]).any():
+            grid[idx, x_range] = 0
         grid[idx, x_range] += 1
 
     if normalize:
-        grid /= grid.max()
+        grid /= np.nanmax(grid)
 
     extent = (x_grid.min(), x_grid.max(), y_grid.min(), y_grid.max())
     img = ax.imshow(grid, extent=extent, **kwargs)
